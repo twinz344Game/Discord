@@ -152,6 +152,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program\WebSocketTest.cs" />
     <Compile Include="Program\information.cs" />
     <Compile Include="Program\Manager.cs" />
     <Compile Include="Program\Program.cs" />

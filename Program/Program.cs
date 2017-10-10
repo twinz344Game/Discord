@@ -5,6 +5,6 @@ namespace ConsoleApp1
     class Program
     {
         //メイン
-        static void Main(string[] args) => new Manager().Start();
+        static void Main(string[] args) => new Manager().Main();
     }
 }

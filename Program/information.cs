@@ -20,4 +20,12 @@ static class information
     static public DiscordClient client = new DiscordClient();
     // トークン名
     static public string token = "MzY1OTExMzAwMTg3ODgxNDcy.DLlM-g.JwTTcU1nc3SsEwng213SU9nrV0U";
+    // BOT名(ユーザー名)
+    static public string botUser = "とぅいんず＠てすとBOT";
+}
+
+static class function
+{
+    static public User commandUser = null;
+    static public bool webhookFlag = false;
 }
