@@ -1,4 +1,4 @@
-﻿using Discord;
+﻿using Discord.WebSocket;
 using System;
 using WebSocket4Net;
 
@@ -26,17 +26,17 @@ class WebSocketTest
     /// WebSocketの機能をオンにするか
     /// </summary>
     /// <param name="messageEvent"></param>
-    public void WebSocketOpenCheck(MessageEventArgs messageEvent)
+    public void WebSocketOpenCheck(SocketMessage messageEvent)
     {
-        if (0 <= messageEvent.Message.Text.IndexOf("websocket"))
+        if (0 <= messageEvent.Content.IndexOf("websocket"))
         {
             function.webhookFlag = !function.webhookFlag;
-            messageEvent.Channel.SendMessage("websocketの機能を" + function.webhookFlag.ToString() + "にしました");
+            messageEvent.Channel.SendMessageAsync("websocketの機能を" + function.webhookFlag.ToString() + "にしました");
             function.commandUser = null;
         }
         else
         {
-            messageEvent.Channel.SendMessage("何もないようなので終了します");
+            messageEvent.Channel.SendMessageAsync("何もないようなので終了します");
             function.commandUser = null;
         }
     }

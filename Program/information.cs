@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using Discord.WebSocket;
+using System.Collections.Generic;
 
 /**
  * 主に情報をまとめるクラス
@@ -17,7 +18,7 @@
 static class information
 {
     // クライアント名
-    static public DiscordClient client = new DiscordClient();
+    static public DiscordSocketClient client = new DiscordSocketClient();
     // トークン名
     static public string token = "MzY1OTExMzAwMTg3ODgxNDcy.DLlM-g.JwTTcU1nc3SsEwng213SU9nrV0U";
     // BOT名(ユーザー名)
@@ -26,6 +27,6 @@ static class information
 
 static class function
 {
-    static public User commandUser = null;
+    static public SocketUser commandUser = null;
     static public bool webhookFlag = false;
 }

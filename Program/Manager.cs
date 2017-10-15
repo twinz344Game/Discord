@@ -1,5 +1,6 @@
 ﻿using Discord;
-using Discord.Net.WebSockets;
+using Discord.WebSocket;
+using System.Threading.Tasks;
 
 /***
  * データの管理などを主に行う(予定)
@@ -7,24 +8,30 @@ using Discord.Net.WebSockets;
 class Manager
 {
     private WebSocketTest webSocketTest = new WebSocketTest();
-
+    private DiscordSocketClient client;
     /// <summary>
     /// メインコード
     /// ここで主に処理を行う
     /// </summary>
-    public void Main()
+    public async Task Main()
     {
         //定義
-        DiscordClient client = information.client;
+        client = information.client;
+
+        // ログイン処理
+        await client.LoginAsync(TokenType.Bot, information.token);
+        await client.StartAsync();
 
         // 機能の実装
         InfomationSet();
 
         // 発言の受け取り処理
-        CommandCheck(client);
+        client.MessageReceived += CommandCheck;
 
         // 待機
-        Wait(client);
+        Wait();
+
+        await Task.Delay(-1);
     }
 
     /// <summary>
@@ -40,52 +47,49 @@ class Manager
     /// 発言を受け取った時の挙動
     /// </summary>
     /// <param name="client"></param>
-    private void CommandCheck(DiscordClient client)
+    private async Task CommandCheck(SocketMessage message)
     {
-        //新規に発言を受け取ったとき
-        client.MessageReceived += async (s, messageEvent) =>
+        // 自分以外の発言の時
+        if (message.Author == client.CurrentUser)
+            return;
+
+        // 自分が呼ばれたか判定
+        if (0 > message.Content.IndexOf(information.botUser) &&
+            function.commandUser != message.Author)
+            return;
+
+        // コマンドを現在受け付けていないなら
+        if (function.commandUser == null)
         {
-            // 自分以外の発言の時
-            if (messageEvent.Message.IsAuthor)
-                return;
-
-            // 自分が呼ばれたか判定
-            if (0 > messageEvent.Message.Text.IndexOf(information.botUser))
-                return;
-
-            // コマンドを現在受け付けていないなら
-            if (function.commandUser == null)
+            await message.Channel.SendMessageAsync("なんでしょうか\n" + message.Author.ToString() + "さん");
+            function.commandUser = message.Author;
+        }
+        else
+        {
+            // とりあえず1人だけ情報を保存
+            if (function.commandUser != message.Author)
             {
-                await messageEvent.Channel.SendMessage("なんでしょうか\n" + messageEvent.Message.User.ToString() + "さん");
-                function.commandUser = messageEvent.Message.User;
+                await message.Channel.SendMessageAsync("他の人の発言ですので\n一旦終了します");
+                function.commandUser = null;
             }
             else
             {
-                // とりあえず1人だけ情報を保存
-                if (function.commandUser != messageEvent.Message.User)
-                {
-                    await messageEvent.Channel.SendMessage("他の人の発言ですので\n一旦終了します");
-                    function.commandUser = null;
-                }
-                else
-                {
-                    // websocketの機能を使うか判定
-                    webSocketTest.WebSocketOpenCheck(messageEvent);
-                }
+                // websocketの機能を使うか判定
+                webSocketTest.WebSocketOpenCheck(message);
             }
-        };
+        }
     }
 
     /// <summary>
     /// 待機中の挙動
     /// </summary>
     /// <param name="client"></param>
-    private void Wait(DiscordClient client)
+    private void Wait()
     {
         //待つ
-        client.ExecuteAndWait(async () => {
+        client.Ready += () => {
             //「token」と紐付けられたBOTに接続
-            await client.Connect(information.token, TokenType.Bot);
-        });
+            return Task.CompletedTask;
+        };
     }
 }
