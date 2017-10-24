@@ -3,6 +3,7 @@ using Discord.Net.WebSockets;
 
 /***
  * データの管理などを主に行う(予定)
+ * TODO: 0.94verに差し替え予定
  ***/
 class Manager
 {
